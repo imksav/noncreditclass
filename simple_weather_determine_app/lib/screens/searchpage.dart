@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:simple_weather_determine_app/screens/homepage.dart';
 
 class DataSearch extends SearchDelegate<String> {
   final cities = [
@@ -43,60 +42,7 @@ class DataSearch extends SearchDelegate<String> {
   Widget buildResults(BuildContext context) {
     String city = query;
     // show some result based on the selection
-    return Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Container(
-          width: MediaQuery.of(context).size.width * 0.90,
-          margin: const EdgeInsets.symmetric(vertical: 50.0, horizontal: 10.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              SizedBox(height: 20.0),
-              Text(
-                city,
-                style: TextStyle(
-                  fontSize: 30.0,
-                  color: Colors.black,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              SizedBox(height: 20.0),
-              TextButton(onPressed: () {}, child: Text("Call API")),
-              Text(
-                "12:00 PM",
-                style: TextStyle(
-                    fontSize: 26.0,
-                    color: Colors.blue,
-                    fontWeight: FontWeight.w300),
-              ),
-              SizedBox(height: 20.0),
-              Image.asset(
-                "assets/images/sunny.jpg",
-                height: 100.0,
-              ),
-              SizedBox(height: 20.0),
-              Text(
-                "19 Degree Celsius",
-                style: TextStyle(
-                    color: Colors.deepOrangeAccent,
-                    fontSize: 18.0,
-                    fontWeight: FontWeight.w700),
-              ),
-              SizedBox(height: 30.0),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  Column(children: [Text("Sunrise"), Text("6:43 AM")]),
-                  Column(children: [Text("Wind"), Text("13 EW")]),
-                  Column(children: [Text("Sunset"), Text("5:38 PM")]),
-                ],
-              )
-            ],
-          ),
-        )
-        //child: Container(height: 200, width: 200, color: Colors.red),
-        );
+    return Text("Fake");
   }
 
   @override
