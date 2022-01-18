@@ -1,13 +1,9 @@
 class User {
+  final int userID;
   final int id;
-  final int userId;
   final String title;
   final String body;
 
-  User({
-    required this.id,
-    required this.userId,
-    required this.title,
-    required this.body,
-  });
+  User(this.userID, this.id, this.title, this.body);
 }
+

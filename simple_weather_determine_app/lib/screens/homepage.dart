@@ -1,142 +1,135 @@
 import 'dart:convert';
-import 'dart:async';
-import 'package:flutter/material.dart';
+
 import 'package:http/http.dart' as http;
+import 'package:flutter/material.dart';
+import 'package:simple_weather_determine_app/models/user.dart';
+import 'package:simple_weather_determine_app/screens/searchpage.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
-
   @override
   _HomePageState createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
-  // final String url = "https://swapi.dev/api/people/5";
-  // late List data;
-
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   this.getJsonData();
-  // }
-
-  // // var url = Uri.parse('https://swapi.dev/api/people/');
-
-  // Future<String> getJsonData() async {
-  //   var response =
-  //       await http.get(Uri.parse(url), headers: {"Accept": "application/json"});
-  //   // print(response.body);
-  //   setState(() {
-  //     var convertDataToJson = JSON.decode(response.body);
-  //     data = convertDataToJson['results'];
-  //   });
-  //   return "Sucess";
-  // }
-
-  final List data;
-  getApiData() async {
-    var url = Uri.parse('https://jsonplaceholder.typicode.com/todos/1');
-    var response = await http.get(url);
-    print(response.statusCode);
-    if (response.statusCode == 200) {
-      print("Success");
-      final data = jsonDecode(response.body);
-      print(data);
-      // final text = data['title'];
-      // print(text);
-    } else {
-      print("Oops, something went wrong");
+  Future<List<User>> _getUsers() async {
+    // var url = Uri.parse('https://jsonplaceholder.typicode.com/posts');
+    var url = Uri.parse(
+        'http://api.weatherapi.com/v1/current.json?key=5728c4a08b1b4ea8b3695129221801&q=Butwal&aqi=no');
+    var data = await http.get(url);
+    var jsonData = json.decode(data.body);
+    print(jsonData);
+    List<User> users = [];
+    for (var u in jsonData) {
+      User user = User(u['current']['condition']['code'],
+          u['current']['is_day'], u['location']['name'], u['location']['lat']);
+      users.add(user);
     }
+    print(users.length);
+    setState(() {
+      _getUsers();
+    });
+    return jsonData;
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: SingleChildScrollView(
-      child: Container(
-        margin: const EdgeInsets.symmetric(vertical: 50.0, horizontal: 10.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            TextField(
-              textDirection: TextDirection.ltr,
-              style: TextStyle(
-                  color: Colors.blueGrey,
-                  fontSize: 22.0,
-                  fontWeight: FontWeight.w300,
-                  fontStyle: FontStyle.italic),
-              decoration: InputDecoration(
-                  labelText: "Search",
-                  labelStyle: TextStyle(
-                      color: Colors.purple,
-                      fontSize: 20.0,
-                      fontWeight: FontWeight.bold),
-                  hintText: "Search here........",
-                  hintStyle: TextStyle(
-                      color: Colors.green,
-                      fontWeight: FontWeight.w300,
-                      fontSize: 22.0),
-                  enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                          width: 5.0,
-                          color: Colors.blue,
-                          style: BorderStyle.solid),
-                      borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(29.0),
-                          topRight: Radius.circular(29.0),
-                          bottomLeft: Radius.circular(29.0),
-                          bottomRight: Radius.circular(29.0)))),
-            ),
-            SizedBox(height: 20.0),
-            Container(
-              child: Text(data[0]['title']),
-            ),
-            SizedBox(height: 20.0),
-            Text(
-              "City Name",
-              style: TextStyle(
-                fontSize: 30.0,
-                color: Colors.black,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            SizedBox(height: 20.0),
-            TextButton(
-                onPressed: () {
-                  // getJsonData();
-                  getApiData();
-                },
-                child: Text("Call API")),
-            Text(
-              "Date and Time",
-              style: TextStyle(
-                  fontSize: 26.0,
-                  color: Colors.blue,
-                  fontWeight: FontWeight.w300),
-            ),
-            SizedBox(height: 20.0),
-            Image.asset("assets/images/sunny.jpg"),
-            SizedBox(height: 20.0),
-            Text(
-              "24 Degree Celsius",
-              style: TextStyle(
-                  color: Colors.deepOrangeAccent,
-                  fontSize: 18.0,
-                  fontWeight: FontWeight.w700),
-            ),
-            SizedBox(height: 30.0),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                Column(children: [Text("Sunrise"), Text("6:30 AM")]),
-                Column(children: [Text("Sunrise"), Text("6:30 AM")]),
-                Column(children: [Text("Sunrise"), Text("6:30 AM")]),
-              ],
-            )
-          ],
-        ),
+      appBar: AppBar(
+        centerTitle: true,
+        actions: [
+          IconButton(
+              onPressed: () {
+                showSearch(context: context, delegate: DataSearch());
+              },
+              icon: Icon(Icons.search))
+        ],
       ),
-    ));
+      body: Container(
+          child: FutureBuilder(
+              future: _getUsers(),
+              builder: (BuildContext context, AsyncSnapshot snapshot) {
+                if (snapshot.data == null) {
+                  print(snapshot.data);
+                  return Container(
+                    child: Center(
+                      child: Text("Loading........"),
+                    ),
+                  );
+                }
+                return ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: snapshot.data.length,
+                  itemBuilder: (BuildContext context, index) {
+                    return Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Container(
+                          width: MediaQuery.of(context).size.width * 0.90,
+                          margin: const EdgeInsets.symmetric(
+                              vertical: 50.0, horizontal: 10.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              SizedBox(height: 20.0),
+                              Text(
+                                snapshot.data[index].title,
+                                style: TextStyle(
+                                  fontSize: 30.0,
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              SizedBox(height: 20.0),
+                              TextButton(
+                                  onPressed: () {
+                                    _getUsers();
+                                  },
+                                  child: Text("Call API")),
+                              Text(
+                                snapshot.data['loaction']['name'],
+                                style: TextStyle(
+                                    fontSize: 26.0,
+                                    color: Colors.blue,
+                                    fontWeight: FontWeight.w300),
+                              ),
+                              SizedBox(height: 20.0),
+                              Image.asset(
+                                "assets/images/sunny.jpg",
+                                height: 100.0,
+                              ),
+                              SizedBox(height: 20.0),
+                              Text(
+                                "19 Degree Celsius",
+                                style: TextStyle(
+                                    color: Colors.deepOrangeAccent,
+                                    fontSize: 18.0,
+                                    fontWeight: FontWeight.w700),
+                              ),
+                              SizedBox(height: 30.0),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceAround,
+                                children: [
+                                  Column(children: [
+                                    Text("Sunrise"),
+                                    Text("6:43 AM")
+                                  ]),
+                                  Column(
+                                      children: [Text("Wind"), Text("13 EW")]),
+                                  Column(children: [
+                                    Text("Sunset"),
+                                    Text("5:38 PM")
+                                  ]),
+                                ],
+                              )
+                            ],
+                          ),
+                        )
+                        //child: Container(height: 200, width: 200, color: Colors.red),
+                        );
+                  },
+                );
+              })),
+    );
   }
 }

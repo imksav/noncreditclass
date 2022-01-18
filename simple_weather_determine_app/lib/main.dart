@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 import 'package:simple_weather_determine_app/screens/homepage.dart';
 
@@ -10,9 +11,23 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: HomePage(),
+    return MaterialApp(debugShowCheckedModeBanner: false, home: AllWeather());
+  }
+}
+
+class AllWeather extends StatefulWidget {
+  const AllWeather({Key? key}) : super(key: key);
+
+  @override
+  _AllWeatherState createState() => _AllWeatherState();
+}
+
+class _AllWeatherState extends State<AllWeather> {
+  
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: HomePage()
     );
   }
 }
